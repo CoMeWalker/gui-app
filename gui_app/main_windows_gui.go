@@ -1,4 +1,5 @@
 // Windows GUI版本 - 无控制台窗口
+//go:build windows
 // +build windows
 
 package main
@@ -18,8 +19,8 @@ import (
 
 // 职业数据结构
 type Profession struct {
-	name      string
-	entry     *widget.Entry
+	name       string
+	entry      *widget.Entry
 	countLabel *widget.Label
 }
 
@@ -118,8 +119,8 @@ func main() {
 		var parts []string
 
 		for _, prof := range professions {
-			playerName := prof.entry.Text    // 玩家姓名
-			score := prof.countLabel.Text    // 积分数值
+			playerName := prof.entry.Text // 玩家姓名
+			score := prof.countLabel.Text // 积分数值
 			if playerName != "" {
 				parts = append(parts, fmt.Sprintf("%s[%s] %s", playerName, prof.name, score))
 			}
@@ -175,7 +176,7 @@ func main() {
 
 			// 计算：本职业积分 × (职业总数-1) - 其他职业积分总和
 			otherScoresTotal := totalAllScores - score
-			profit := score * float64(validProfessionCount-1) - otherScoresTotal
+			profit := score*float64(validProfessionCount-1) - otherScoresTotal
 			goldProfit := profit * rate
 
 			profitStr := fmt.Sprintf("%.2f", profit)
