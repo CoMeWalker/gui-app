@@ -1,0 +1,84 @@
+name: Build Windows Executable (Fixed)
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Check project structure
+      run: |
+        Write-Host "=== 检查项目结构 ==="
+        Get-ChildItem -Recurse -Name | Where-Object { $_ -match "(main\.go|go\.mod|\.yml$)" } | ForEach-Object { Write-Host "Found: $_" }
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21'
+
+    - name: Cache Go modules
+      uses: actions/cache@v3
+      with:
+        path: ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+
+    - name: Download dependencies
+      run: |
+        Write-Host "=== 下载依赖 ==="
+        if (Test-Path "go.mod") {
+          go mod download
+          Write-Host "✅ 依赖下载完成"
+        } elseif (Test-Path "gui_app/go.mod") {
+          Write-Host "📁 发现gui_app子目录，切换到该目录"
+          Set-Location gui_app
+          go mod download
+          Write-Host "✅ 依赖下载完成"
+        } else {
+          Write-Host "❌ 未找到go.mod文件"
+          exit 1
+        }
+
+    - name: Build executable
+      run: |
+        Write-Host "=== 开始构建 ==="
+        if (Test-Path "main.go") {
+          Write-Host "📄 在根目录找到main.go"
+          go build -o "职业积分管理系统.exe" main.go
+        } elseif (Test-Path "gui_app/main.go") {
+          Write-Host "📁 在gui_app目录找到main.go"
+          Set-Location gui_app
+          go build -o "职业积分管理系统.exe" main.go
+        } else {
+          Write-Host "❌ 未找到main.go文件"
+          Get-ChildItem -Recurse -Name | Where-Object { $_ -match "main\.go" }
+          exit 1
+        }
+
+        if (Test-Path "职业积分管理系统.exe") {
+          $size = (Get-Item "职业积分管理系统.exe").Length / 1MB
+          Write-Host "✅ 构建成功！文件大小: $([math]::Round($size, 2)) MB"
+        } else {
+          Write-Host "❌ 构建失败"
+          exit 1
+        }
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: windows-executable-fixed
+        path: |
+          职业积分管理系统.exe
+          gui_app/职业积分管理系统.exe
+        if-no-files-found: warn
+        retention-days: 30

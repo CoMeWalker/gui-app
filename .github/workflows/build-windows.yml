@@ -1,0 +1,54 @@
+name: Build Windows Executable
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch: # 允许手动触发
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21'
+
+    - name: Cache Go modules
+      uses: actions/cache@v3
+      with:
+        path: ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+
+    - name: Download dependencies
+      run: go mod download
+
+    - name: Build Windows executable
+      run: |
+        cd gui_app
+        go build -o "职业积分管理系统.exe" main.go
+
+    - name: Test executable exists
+      run: |
+        if (Test-Path "职业积分管理系统.exe") {
+          Write-Host "✅ Build successful: 职业积分管理系统.exe"
+          Write-Host "File size: $((Get-Item '职业积分管理系统.exe').Length) bytes"
+        } else {
+          Write-Host "❌ Build failed: executable not found"
+          exit 1
+        }
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: windows-executable
+        path: gui_app/职业积分管理系统.exe
+        retention-days: 30
