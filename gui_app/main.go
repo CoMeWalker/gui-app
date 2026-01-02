@@ -82,13 +82,13 @@ func setupMainWindow(myWindow fyne.Window) {
 	rateEntry.SetText("1.0")
 	rateEntry.Resize(fyne.NewSize(200, 36)) // 固定宽度为200像素
 
-	// 结果显示
-	resultEntry := widget.NewMultiLineEntry()
-	resultEntry.Disable()
-	resultEntry.Resize(fyne.NewSize(800, 600)) // 高度增加300像素
+	// 结果显示 - 使用RichText显示黑色加粗文字
+	resultText := widget.NewRichTextFromMarkdown("")
+	resultText.Resize(fyne.NewSize(800, 600)) // 高度增加300像素
+	resultText.Wrapping = fyne.TextWrapWord
 
 	// 创建可滚动的容器
-	scrollContainer := container.NewScroll(resultEntry)
+	scrollContainer := container.NewScroll(resultText)
 	scrollContainer.SetMinSize(fyne.NewSize(800, 300))
 
 	// 创建职业区块的函数
@@ -200,11 +200,13 @@ func setupMainWindow(myWindow fyne.Window) {
 				goldProfitStr = "+" + goldProfitStr
 			}
 
-			results = append(results, fmt.Sprintf("%s (%s): 积分 %.2f - 其他职业总和 %.2f = 积分盈亏 %s, 金币盈亏 %s",
+			results = append(results, fmt.Sprintf("**%s (%s):** 积分 %.2f - 其他职业总和 %.2f = 积分盈亏 %s, 金币盈亏 %s",
 				prof.name, playerName, score, otherScoresTotal, profitStr, goldProfitStr))
 		}
 
-		resultEntry.SetText(strings.Join(results, "\n"))
+		// 将结果转换为Markdown格式并设置到RichText
+		markdownText := strings.Join(results, "\n\n")
+		resultText.ParseMarkdown(markdownText)
 
 		// 复制到剪贴板
 		copyText := strings.Join(results, " | ")
