@@ -48,8 +48,12 @@ cd gui-app  # 如果是从ZIP下载的
 go mod tidy
 ```
 
-#### 3. 编译程序
+#### 3. 编译程序（无控制台窗口版本）
 ```cmd
+# 推荐：编译无控制台窗口版本
+go build -ldflags "-H=windowsgui" -o 职业积分管理系统.exe main_windows_gui.go
+
+# 或者使用普通版本（会有控制台窗口）
 go build -o 职业积分管理系统.exe main.go
 ```
 
@@ -69,12 +73,18 @@ cd gui-app
 # 2. 下载依赖
 go mod tidy
 
-# 3. 编译程序
-go build -o 职业积分管理系统.exe main.go
+# 3. 编译程序（无控制台窗口版本）
+go build -ldflags "-H=windowsgui" -o 职业积分管理系统.exe main_windows_gui.go
 
-# 4. 运行程序（可选）
+# 4. 运行程序（双击exe文件或命令行）
 职业积分管理系统.exe
 ```
+
+### 🎨 编译选项说明
+
+- **`-ldflags "-H=windowsgui"`**: 告诉Go编译器生成Windows GUI程序，不显示控制台窗口
+- **`main_windows_gui.go`**: 专门为Windows优化的GUI版本
+- **`main.go`**: 通用版本（会显示控制台窗口）
 
 ### 🛠️ 故障排除
 
