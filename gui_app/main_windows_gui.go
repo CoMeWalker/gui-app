@@ -189,13 +189,13 @@ func main() {
 				goldProfitStr = "+" + goldProfitStr
 			}
 
-		results = append(results, fmt.Sprintf("**%s (%s):** 积分 %.2f - 其他职业总和 %.2f = 积分盈亏 %s, 金币盈亏 %s",
-			prof.name, playerName, score, otherScoresTotal, profitStr, goldProfitStr))
-	}
+			results = append(results, fmt.Sprintf("**%s (%s):** 积分 %.2f - 其他职业总和 %.2f = 积分盈亏 %s, 金币盈亏 %s",
+				prof.name, playerName, score, otherScoresTotal, profitStr, goldProfitStr))
+		}
 
-	// 将结果转换为Markdown格式并设置到RichText
-	markdownText := strings.Join(results, "\n\n")
-	resultText.ParseMarkdown(markdownText)
+		// 将结果转换为Markdown格式并设置到RichText
+		markdownText := strings.Join(results, "\n\n")
+		resultText.ParseMarkdown(markdownText)
 
 		// 复制到剪贴板
 		copyText := strings.Join(results, " | ")
