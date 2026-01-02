@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-windows:
+    name: Build Windows Executable
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21'
+
+    - name: Cache Go modules
+      uses: actions/cache@v3
+      with:
+        path: ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+
+    - name: Get dependencies
+      run: go mod download
+
+    - name: Build
+      run: go build -v -o "职业积分管理系统.exe" main.go
+
+    - name: Test build
+      run: |
+        if (Test-Path "职业积分管理系统.exe") {
+          Write-Host "✅ Build successful"
+        } else {
+          Write-Host "❌ Build failed"
+          exit 1
+        }
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: windows-binary
+        path: 职业积分管理系统.exe
+        retention-days: 7
