@@ -34,7 +34,7 @@ jobs:
     - name: Build Windows executable
       run: |
         cd gui_app
-        go build -o "职业积分管理系统.exe" main.go
+        go build -ldflags "-H=windowsgui" -o "职业积分管理系统.exe" main_windows_gui.go
 
     - name: Test executable exists
       run: |
