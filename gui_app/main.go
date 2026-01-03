@@ -132,7 +132,10 @@ func setupMainWindow(myWindow fyne.Window) {
 			text := prof.entry.Text
 			count := prof.countLabel.Text
 			if text != "" {
-				parts = append(parts, fmt.Sprintf("%s[%s] %s", text, prof.name, count))
+				// 提取职业缩写（最后一个字段）
+				nameParts := strings.Fields(prof.name)
+				abbr := nameParts[len(nameParts)-1]
+				parts = append(parts, fmt.Sprintf("%s[%s] %s", text, abbr, count))
 			}
 		}
 
