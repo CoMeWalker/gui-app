@@ -122,9 +122,9 @@ func main() {
 			playerName := prof.entry.Text // 玩家姓名
 			score := prof.countLabel.Text // 积分数值
 			if playerName != "" {
-				// 提取职业缩写（最后一个字段）
-				nameParts := strings.Fields(prof.name)
-				abbr := nameParts[len(nameParts)-1]
+				// 提取职业缩写（最后两个字符）
+				nameLen := len(prof.name)
+				abbr := prof.name[nameLen-2:] // 获取最后两个字符
 				parts = append(parts, fmt.Sprintf("%s[%s] %s", playerName, abbr, score))
 			}
 		}
